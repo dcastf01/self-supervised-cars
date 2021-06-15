@@ -116,19 +116,15 @@ class LitSelfModel(LitSystemTemplate,BenchmarkModule):
             num_classes=num_classes,
         )
         
-        
-        
         #puede que loss_fn no vaya aquí y aquí solo vaya modelo
         self.num_ftrs=num_ftrs
                 
         self.criterion=criterion
         self.backbone=model.backbone
-        self.model=model
-        
+        self.model=model     
         
     def forward(self,x):
-        self.model(x)
-        
+        self.model(x)        
     
     def training_step(self, batch, batch_idx):
         # get the two image transformations
@@ -141,6 +137,10 @@ class LitSelfModel(LitSystemTemplate,BenchmarkModule):
         loss = self.criterion(y0, y1)
         # log loss and return
 
-        self.log('train_loss_ssl', loss)
+        self.log('train_loss_ssl', loss,prog_bar=True)
         
         return loss
+    
+    def on_epoch_end(self) -> None:
+        self.log("KNN_accuracy_max",self.max_accuracy*100)
+        return super().on_epoch_end()

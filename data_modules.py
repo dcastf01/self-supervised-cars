@@ -280,7 +280,7 @@ class Cars196DataModule(TemplateDataModule):
         return DataLoader(self.cars196_test, batch_size=self.batch_size,
                           shuffle=False,
                           num_workers=CONFIG.NUM_WORKERS,
-                          pin_memory=False,
+                          pin_memory=True,
                           drop_last=False
                           )
               

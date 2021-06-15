@@ -49,6 +49,7 @@ def main():
         )
     #get datamodule
     dm=get_datamodule(config.dataset_name,
+                      config.data_dir,
                       config.batch_size,
                       transfrom_fn,
                       transform_fn_test,
@@ -63,22 +64,27 @@ def main():
                     optim=config.optim_name,
                     lr= config.lr,
                     img_size=config.IMG_SIZE,
-                    epochs=config.NUM_EPOCHS,
+                    epochs=config.NUM_EPOCHS_SELF_TRAIN,
                     dataloader_kNN=dm.trainclassifier_dataloader(),
                     num_classes=196
                         
                      )
     #create trainer
-    self_trainer=get_trainer(wandb_logger,callbacks,config)
+    self_trainer=get_trainer(wandb_logger,callbacks,
+                             config.NUM_EPOCHS_SELF_TRAIN,
+                             config)
     
 
     logging.info("empezando el entrenamiento")
     self_trainer.fit(self_system,datamodule=dm)
     
     classifier_system=get_classifier_system(self_system,
-                                            config.optim_name)
+                                            config.optim_name,
+                                            config.NUM_EPOCHS_CLASSIFIER_TRAIN,)
     
-    classifier_trainer=get_trainer(wandb_logger,callbacks,config)
+    classifier_trainer=get_trainer(wandb_logger,callbacks,
+                                   config.NUM_EPOCHS_CLASSIFIER_TRAIN,
+                                   config)
     classifier_trainer.fit(
             classifier_system,
             dm.trainclassifier_dataloader(),

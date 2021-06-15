@@ -92,19 +92,20 @@ def get_transform_collate_function(experiment_name:str,
                                             interpolation)
     return transform_fn_classification,transform_fn_test,collate_fn
     
-def get_datamodule(name_dataset:str
-                   ,batch_size:int,
+def get_datamodule(name_dataset:str,
+                   data_dir:str,
+                   batch_size:int,
                    transform_fn,
                    transform_fn_test,
                    collate_fn
                    ):
-
+ 
     if isinstance(name_dataset,str):
         name_dataset=Dataset[name_dataset.lower()]
     
     if name_dataset==Dataset.grocerydataset:
         dm=GroceryStoreDataModule(
-            data_dir="data",
+            data_dir=data_dir,
             batch_size=batch_size,
             transform_fn=transform_fn,
             transform_fn_test=transform_fn_test,
@@ -115,7 +116,7 @@ def get_datamodule(name_dataset:str
         dm=FGVCAircraftDataModule(
             transform_fn=transform_fn,
             transform_fn_test=transform_fn_test,
-            data_dir="data",
+            data_dir=data_dir,
             batch_size=batch_size,
             collate_fn=collate_fn
             )
@@ -124,7 +125,7 @@ def get_datamodule(name_dataset:str
         dm=Cars196DataModule(
             transform_fn=transform_fn,
             transform_fn_test=transform_fn_test,
-            data_dir="data",
+            data_dir=data_dir,
             batch_size=batch_size,
             collate_fn=collate_fn
                     )
@@ -173,7 +174,7 @@ def get_callbacks(config,dm):
         learning_rate_monitor,
         # early_stopping,
         # freeze_layers,
-        plt_latent_space
+        # plt_latent_space
             ]
         
     return callbacks
@@ -263,12 +264,16 @@ def get_self_system( experiment_name:str,
     
 
     return self_system
-def get_classifier_system(self_system,optim_model):
+
+def get_classifier_system(self_system,
+                          optim_model,
+                          num_epochs):
     
     return LitClassifier(self_system,optim_model)
     
 def get_trainer(wandb_logger,
                 callbacks:list,
+                num_epochs:int,
                 config):
     
     gpus=[]
@@ -287,10 +292,10 @@ def get_trainer(wandb_logger,
         plugins=None
         
     trainer=pl.Trainer(
-                    accumulate_grad_batches=16,
+                    accumulate_grad_batches=2,
                     logger=wandb_logger,
                        gpus=gpus,
-                       max_epochs=config.NUM_EPOCHS,
+                       max_epochs=num_epochs,
                        precision=config.precision_compute,
                     #    limit_train_batches=0.1, #only to debug
                     #    limit_val_batches=0.05, #only to debug

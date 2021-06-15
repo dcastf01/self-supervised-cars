@@ -14,7 +14,7 @@ class TemplateDataModule(pl.LightningDataModule):
                  ):
 
         self.transform_fn=None
-        self.transform_fn_classifier=transform_fn
+        self.transform_fn_classifier=transform_fn_test #poner cuando cuadre transform_fn ya que el cambio ha sido para una prueba
         self.transform_fn_test=transform_fn_test
         self.data_dir = data_dir
         self.batch_size = batch_size

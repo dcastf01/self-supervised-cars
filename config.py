@@ -33,7 +33,7 @@ class ExperimentAvailable(Enum):
 @dataclass(init=True)
 class CONFIG(object):
     
-    experiment=ExperimentAvailable.simclr
+    experiment=ExperimentAvailable.moco
     experiment_name:str=experiment.name
     
     backbone=ModelsAvailable.resnet50
@@ -42,7 +42,7 @@ class CONFIG(object):
     #torch config
     DEVICE: str = "cuda" if torch.cuda.is_available() else "cpu"
 
-    batch_size:int =64
+    batch_size:int =50
     
     dataset=Dataset.cars196
     dataset_name:str=dataset.name
@@ -51,13 +51,15 @@ class CONFIG(object):
     optim=Optim.sgd
     optim_name:str=optim.name
     
-    lr:float = 0.1
+    lr:float = 0.01
     AUTO_LR :bool= False
     # LAMBDA_IDENTITY = 0.0
-    NUM_WORKERS:int = 0
+    NUM_WORKERS:int = 5
     SEED:int=1
     IMG_SIZE:int=448
-    NUM_EPOCHS :int= 5 #poner 200
+    NUM_EPOCHS_SELF_TRAIN :int= 200 #poner 200
+    NUM_EPOCHS_CLASSIFIER_TRAIN:int=20
+    data_dir="/home/dcast/data/"
     # LOAD_MODEL :bool= True
     # SAVE_MODEL :bool= True
     PATH_CHECKPOINT: str= os.path.join(ROOT_WORKSPACE,"classification/model/checkpoint")
